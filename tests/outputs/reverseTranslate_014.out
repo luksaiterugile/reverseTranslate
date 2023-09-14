@@ -1,0 +1,7 @@
+reverseTranslate:'-': first line : Header is not found. 
+            Please insert suitable header before sequence.
+reverseTranslate:'-': line after '>header1': 
+            Sequence is not provided. Please insert sequence after header.
+reverseTranslate:'-': line after '>header2': Sequence contains 
+            forbidden symbols, non existent amino acids or lower case 
+            letters. Please remove these symbols.

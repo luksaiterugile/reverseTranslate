@@ -1,0 +1,3 @@
+reverseTranslate:'tests/data/forbidden_symbols_seq.fasta': line after '>header1': Sequence contains 
+            forbidden symbols, non existent amino acids or lower case 
+            letters. Please remove these symbols.

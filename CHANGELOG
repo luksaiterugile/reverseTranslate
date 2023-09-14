@@ -1,0 +1,26 @@
+# Changelog
+All notable changes to this program 'reverseTranslate' will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [1.0.0] - 2021-12-09
+### Added 
+- Removal of empty lines in input files
+- Modificated header at each output will print identification code insted of whole header line. 
+- Program execution example is inserted in the program. 
+
+### Fixed
+- Subroutine problem with perlcritic was fixed by passing list @_ variable. 
+- Due to percritic error with special symbols, line counting was substituted with header printing. 
+
+### Changed
+- Program specification file, new information added.
+- Warning message format changed, insted of printing line number, header is printed. 
+- Warning messages for empty sequence is changed.
+
+## [0.1.0] - 2021-12-06
+### Added 
+- Program 'reverseTranslate'.

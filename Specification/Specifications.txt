@@ -1,0 +1,59 @@
+﻿Reverse translate into the nucleus code, E. coli codon usage
+============================================================
+
+PROGRAM
+=========
+Write a program which generates a gene that would be translated into a given peptide sequence using the nucleus genetic code and E.coli codon frequences. Program MAY use data-driven programming for easy user data editing, without changing the main code. 
+
+The title of the program: 
+reverseTranslate
+
+Program execution:
+./reverseTranslate peptideSeq_1.fasta [ peptideSeq_2.fasta ...]
+
+Input names of fasta files are not mandatory. The program MUST read from standart input (STDIN).
+
+DATA FORMATS
+=============
+The input MUST be provided in FASTA format [2]. FASTA header MUST be provided with ">" symbol and identification code. If identification code (or other information) and header symbol are not given, header and its' sequence MUST be skipped from proccessing. FASTA file MAY contain more than one peptide sequence. Peptide sequences MUST be provided without empty lines. The program MUST proccess all sequences from the input stream. Also, more than one FASTA file MAY be provided. The program MUST proccess all provided FASTA files. If files are empty, program MUST skip files from proccessing, but warning message MUST NOT be printed. 
+
+Input MUST contain header with ">" symbol at the start and its' identification code, the second line MUST contain sequence (sequences). Input sequence can contain any number of aminoacids, the program MUST process all of the correctly given aminoacids. All sequence MUST be provided as an one upper case letter of amino acid, (ex. Leucine - L, Arginine - R), also sequence MUST NOT have any forbidden characters. 
+
+Input format:
+- peptide sample header with identification code(ex. >header1)
+- peptide sequence
+
+Output MUST be printed into STDOUT. Output lines MUST include modificated header (presented below) and nucleotide (DNA) sequence, where nucleotide sequence is translated in the ribosome and resulting into given input peptide sequence. If file is not given and data is read from STDIN, symbol "-" MUST be printed in modificated header. Output generates a DNA sequence from a nucleus genetic code and E.coli codon frequences [1], presenting the most likely non-degenerate coding sequence. To find most likely non-degenerate codon, frequency per thousand was used. For every header and sequence program MUST print results to separate lines. 
+
+Output format:
+- modificated header (format presented below)
+- nucleotide sequence
+
+The output sequence header format:
+>{identification code} ({input_filename} or {-}) reverseTranslate Author
+
+Example 1 (reading from file): 
+>header1 peptideSeq.fasta reverseTranslate Rugile Luksaite
+TTTCTGTATCATCAGATTATGACCAAA
+Example 2 (reading from STDIN):
+>header1 - reverseTranslate Rugile Luksaite
+
+DIAGNOSTICS
+===========
+Program MUST warn about the following errors:
+
+- The files that were provided as an input do not exist or cannot be read (Perl diagnostics 'use warnings' will cause warning);
+- The input files that contain a valid header with empty sequence will cause warning, sequence with it's header will be skipped and will not be included in the processing;
+- If valid header is not provided, unless it is a continuation of the sequence, will cause warning, sequence with it's header will be skipped and will not be included in the processing;
+- Sequences with forbidden symbols, non existent or lower case amino acid letters, will cause warning, sequence with it's header will be skipped and will not be included in the processing;
+
+Warning format - Perl will inform about mistakes using function warn(). Warning message MUST print programs name, file name and its' valid header if possible. 
+
+REFERENCES
+==========
+[1] Codon Usage Database, Escherichia coli O157:H7 EDL933 [gbbct]. URL: http://www.kazusa.or.jp/codon/cgi-bin/showcodon.cgi?species=155864&aa=SELECT+A+CODE&style=N [accessed 2021-09-17]
+[2] FASTA format description, URL: http://genetics.bwh.harvard.edu/pph/FASTA.html
+[3] beta-d-galactosidase [Escherichia coli], GenBank: AAA24053.1, URL: https://www.ncbi.nlm.nih.gov/protein/AAA24053.1, 05-MAY-1993
+[4] dnaX ORF [Escherichia coli], GenBank: AAA23457.1, URL: https://www.ncbi.nlm.nih.gov/protein/AAA23457.1, 26-APR-1993
+[5] htpG ORF [Escherichia coli], GenBank: AAA23460.1, URL: https://www.ncbi.nlm.nih.gov/protein/AAA23460.1, 26-APR-1993
+

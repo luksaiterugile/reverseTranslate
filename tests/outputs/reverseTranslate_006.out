@@ -1,0 +1,24 @@
+>header1 tests/data/peptideSeq.fasta reverseTranslate Rugile Luksaite
+TTTCTGTATCATCAGATTATGAACAAA
+>header2 tests/data/peptideSeq.fasta reverseTranslate Rugile Luksaite
+TTTTATCATCAGATTATGAACAAAGTGGATGAATGCTGGCCGACCGCGGGCCTGAGCCGC
+>header3 tests/data/peptideSeq.fasta reverseTranslate Rugile Luksaite
+GCGGCGGCGGCGGCG
+>header4 tests/data/peptideSeq.fasta reverseTranslate Rugile Luksaite
+GCGACCGCGACCCGCCGCCGCCGC
+>header5 tests/data/peptideSeq.fasta reverseTranslate Rugile Luksaite
+GGCGCGACCCGCCCGTGGTGGCCGTGCTGC
+>header6 tests/data/peptideSeq.fasta reverseTranslate Rugile Luksaite
+GCGACCGCGACCCGCCGCCGCCGCCATCAGATTATTATTATTATGAACGATGAAAGCAGCAGC
+>header7 tests/data/peptideSeq.fasta reverseTranslate Rugile Luksaite
+AGCTGCGAAGATGATGATGATGATATGATTATTATTATTCAGCATTATTAT
+>header10 tests/data/peptideSeq_2.fasta reverseTranslate Rugile Luksaite
+GCGCGC
+>header11 tests/data/peptideSeq_2.fasta reverseTranslate Rugile Luksaite
+GCGACCGCGACCCGCCGCCGCCGC
+>header12 tests/data/peptideSeq_2.fasta reverseTranslate Rugile Luksaite
+GGCGCGACCCGCCCGTGGTGGCCGTGCTGC
+>header13 tests/data/peptideSeq_2.fasta reverseTranslate Rugile Luksaite
+GCGACCGCGTGGTGGTGGTGGCTGTATCAT
+>header14 tests/data/peptideSeq_2.fasta reverseTranslate Rugile Luksaite
+AGCTGCAAAAACATGATT

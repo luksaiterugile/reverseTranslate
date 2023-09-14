@@ -1,0 +1,4 @@
+reverseTranslate:'tests/data/without_sequence.fasta': line after '>header1': 
+            Sequence is not provided. Please insert sequence after header.
+>header2 tests/data/without_sequence.fasta reverseTranslate Rugile Luksaite
+ATTCTGAAAATGTTTCCGAGCACCTGGTGGTGGTGGTGGTAT

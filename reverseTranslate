@@ -1,0 +1,339 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use List::Util qw( reduce );
+use File::Basename;
+
+# This program  generates a gene that would 
+# be translated into  a given peptide sequence 
+# using the nucleus genetic code and 
+# E.coli codon frequences.
+# Author is Rugile Luksaite
+
+# Program execution
+# ./reverseTranslate peptideSeq.fasta [peptideSeq_1.fasta]
+
+# Input:
+# One or more FASTA files with aminoacid sequences
+
+# Output:
+# One or more DNA sequences in FASTA format
+
+##################################
+my $header;
+my $peptide = "";
+my $firstiteration = 1;
+my $author = "Rugile Luksaite";
+# variable filename will save input file's name
+my $filename = "";
+my $rna = "";
+my $dna = "";
+# take only id from header to make warn message shorter
+my $shortheader;
+
+# Saving codon frequencies
+# to hashes
+my %F_frequency = (
+    'UUU' => 22.2,
+    'UUC' => 15.9
+);
+my %L_frequency = (
+    'UUA' => 13.8,
+    'UUG' => 13.0,
+    'CUU' => 11.4,
+    'CUC' => 10.5,
+    'CUA' => 3.9,
+    'CUG' => 51.1
+);
+my %I_frequency = (
+    'AUU' => 29.7,
+    'AUC' => 23.9,
+    'AUA' => 5.5
+);
+my %M_frequency = (
+    'AUG' => 27.2
+);
+
+my %V_frequency = (
+    'GUU' => 18.1,
+    'GUC' => 14.8,
+    'GUA' => 10.9,
+    'GUG' => 26.2
+);
+
+my %S_frequency = (
+    'UCU' => 8.7,
+    'UCC' => 8.9,
+    'UCA' => 8.1,
+    'UCG' => 8.8,
+    'AGU' => 9.4,
+    'AGC' => 16.0
+);
+
+my %P_frequency = (
+    'CCU' => 7.2,
+    'CCC' => 5.6,
+    'CCA' => 8.4,
+    'CCG' => 22.4
+);
+
+my %T_frequency = (
+    'ACU' => 9.1,
+    'ACC' => 22.8,
+    'ACA' => 8.1,
+    'ACG' => 15.0
+);
+
+my %A_frequency = (
+    'GCU' => 15.4,
+    'GCC' => 25.2,
+    'GCA' => 20.7,
+    'GCG' => 32.3
+);
+
+my %Y_frequency = (
+    'UAU' => 16.5,
+    'UAC' => 12.3
+);
+
+my %H_frequency = (
+    'CAU' => 12.8,
+    'CAC' => 9.4
+);
+
+my %Q_frequency = (
+    'CAA' => 14.7,
+    'CAG' => 29.4
+);
+
+my %N_frequency = (
+    'AAU' => 19.2,
+    'AAC' => 21.7
+);
+
+my %K_frequency = (
+    'AAA' => 34.0,
+    'AAG' => 11.0
+);
+
+my %D_frequency = (
+    'GAU' => 32.8,
+    'GAC' => 19.2
+);
+
+my %E_frequency = (
+    'GAA' => 39.3,
+    'GAG' => 18.7
+);
+
+my %C_frequency = (
+    'UGU' => 5.2,
+    'UGC' => 6.4
+);
+
+my %W_frequency = (
+    'UGG' => 15.3
+);
+
+my %R_frequency = (
+    'CGU' => 20.2,
+    'CGC' => 20.8,
+    'CGA' => 3.8,
+    'CGG' => 6.2,
+    'AGA' => 2.9,
+    'AGG' => 1.8
+);
+
+my %G_frequency = (
+    'GGU' => 24.2,
+    'GGC' => 28.1,
+    'GGA' => 8.9,
+    'GGG' => 11.8
+);
+
+
+while(<>){
+    # variable 'line' will hold currentline
+    my $line;
+    $line = $_;
+    
+    # Removes /n from the end of the string
+    chomp($line);
+    
+    # Skipping empty lines
+    if($line eq ""){
+    	next;
+    }
+    
+    # Reading the very first line
+    if($firstiteration == 1){
+        if(/^>/){
+            if(length($line) > 1){
+                # finds header with symbol > and id
+                $firstiteration = 0;
+                $header = $line;
+                
+                # if header contains not only id but description 
+                #and other information - take only id from header. 
+                if( $header =~ /\s/ ){
+                    $shortheader = substr($header, 0, index($header, ' '));
+                }
+                else{
+                    $shortheader = $header; 
+                }
+                
+                # Saving filename to print results
+                $filename = $ARGV;
+                next;
+            }
+        }
+        else{
+            warn basename(__FILE__) . ":'$ARGV': first line : Header is not found. 
+            Please insert suitable header before sequence.\n";
+            # buvo 'undef'
+            $peptide = "";
+            $firstiteration = 0;
+            next;
+        }
+    }
+    
+    if(!(/^>/)){
+        # Reading the sequence, even when it
+        # has continuation  in the next line. 
+        # Also searching for forbidden characters and
+        # not given sequences.
+        if($line =~ s/[\$#@~!&*()\[\];.,:?^ `\\\/a-zBJOUXZ%]+//g){
+            warn basename(__FILE__) . ":'$ARGV': line after '$shortheader': Sequence contains 
+            forbidden symbols, non existent amino acids or lower case 
+            letters. Please remove these symbols.\n";
+            next;
+        }
+        elsif(length($line) > 0 && defined($shortheader)){
+                 $peptide .= $line;
+        }
+    }
+
+    if(/^>/ || eof()){
+        my @amino_Arr = ();
+        if(defined $peptide && length($peptide) > 0 ){
+            if(defined $shortheader && length($shortheader) > 1){
+                # Spliting up peptide sequence into aminos
+                @amino_Arr = split(//, $peptide);
+                $rna = "";
+                # Converting amino acids to RNR
+                for my $i(@amino_Arr){
+                    if($i eq "F"){
+                        $rna .= Conversion(%F_frequency);
+                    }
+                    elsif($i eq "L"){
+                        $rna .= Conversion(%L_frequency);
+                    }
+                    elsif($i eq "Y"){
+                        $rna .= Conversion(%Y_frequency);
+                    }
+                    elsif($i eq "H"){
+                        $rna .= Conversion(%H_frequency);
+                    }
+                    elsif($i eq "Q"){
+                        $rna .= Conversion(%Q_frequency);
+                    }
+                    elsif($i eq "I"){
+                        $rna .= Conversion(%I_frequency);
+                    }
+                    elsif($i eq "M"){
+                        $rna .= Conversion(%M_frequency);
+                    }
+                    elsif($i eq "N"){
+                        $rna .= Conversion(%N_frequency);
+                    }
+                    elsif($i eq "K"){
+                        $rna .= Conversion(%K_frequency);
+                    }
+                    elsif($i eq "V"){
+                        $rna .= Conversion(%V_frequency);
+                    }
+                    elsif($i eq "D"){
+                        $rna .= Conversion(%D_frequency);
+                    }
+                    elsif($i eq "E"){
+                        $rna .= Conversion(%E_frequency);
+                    }
+                    elsif($i eq "S"){
+                        $rna .= Conversion(%S_frequency);
+                    }
+                    elsif($i eq "C"){
+                        $rna .= Conversion(%C_frequency);
+                    }
+                    elsif($i eq "W"){
+                        $rna .= Conversion(%W_frequency);
+                    }
+                    elsif($i eq "P"){
+                        $rna .= Conversion(%P_frequency);
+                    }
+                    elsif($i eq "R"){
+                        $rna .= Conversion(%R_frequency);
+                    }
+                    elsif($i eq "T"){
+                        $rna .= Conversion(%T_frequency);
+                    }
+                    elsif($i eq "A"){
+                        $rna .= Conversion(%A_frequency);
+                    }
+                    else{
+                        $rna .= Conversion(%G_frequency);
+                    }
+                }
+                # Converting RNA to DNA
+                $rna =~ tr/U/T/;
+                $dna = $rna;
+                
+                # Printing results into STDOUT
+                print $shortheader," ","$filename"," ",
+                basename(__FILE__)," ", $author, "\n";
+                print $dna, "\n";
+            }
+        }
+        elsif(defined($shortheader)){       
+            warn basename(__FILE__) . ":'$ARGV': line after '$shortheader': 
+            Sequence is not provided. Please insert sequence after header.\n";       
+        }
+        
+        # Searches for suitable header with symbol > and id
+        if(length($line) > 1){
+            # Saving filename to print results
+            $filename = $ARGV;
+            # Updating header
+            $header = $line;
+            
+            # if header contains not only id but description 
+            #and other information - take only id from header. 
+            if( $header =~ /\s/ ){
+                $shortheader = substr($header, 0, index($header, ' '));
+            }
+            else{
+                $shortheader = $header; 
+            }
+            
+            $peptide = "";
+            next;
+        }
+        else {
+            # will be called if header doesnt have id 
+            # but sequence is provided
+            # then this record will be skipped
+            $peptide = undef;
+            $shortheader = undef;
+            next;
+        }
+    }
+}
+
+# Subroutine to convert amino acids 
+# to RNA.
+sub Conversion{
+    my %hash = @_;
+    my $find_rna = "";
+    # Searching for highest frequency
+    $find_rna = reduce{ $hash{$a} > $hash{$b} ? $a : $b}keys %hash;
+    return $find_rna;
+}
